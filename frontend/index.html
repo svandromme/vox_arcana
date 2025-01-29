@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test WebSocket</title>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    <input type="text" id="message" placeholder="Envoyer un message">
+    <button onclick="sendMessage()">Envoyer</button>
+    <div id="messages"></div>
+
+    <script>
+        const socket = new WebSocket("ws://127.0.0.1:8000/ws");
+
+        socket.onopen = () => {
+            console.log("Connecté au WebSocket");
+        };
+
+        socket.onmessage = (event) => {
+            const messageDiv = document.getElementById("messages");
+            messageDiv.innerHTML += `<p>${event.data}</p>`;
+        };
+
+        socket.onclose = () => {
+            console.log("Déconnecté du WebSocket");
+        };
+
+        function sendMessage() {
+            const message = document.getElementById("message").value;
+            socket.send(message);
+        }
+    </script>
+</body>
+</html>
