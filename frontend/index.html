@@ -7,11 +7,12 @@
 </head>
 <body>
     <h1>WebSocket Test</h1>
+    <input type="text" id="username" placeholder="Username">
+    <br />
     <input type="text" id="session_id" placeholder="Session id">    
     <button onclick="connectSession()">Connect</button>
     <button onclick="generateSession()">Generate</button>
-    <br />
-    <input type="text" id="username" placeholder="Username">
+    <br />    
     <input type="text" id="message" placeholder="Message">
     <button onclick="sendMessage()">Send</button>
     <div id="messages"></div>
@@ -23,14 +24,17 @@
         function sendMessage() {
             if(socket){
                 const message = document.getElementById("message").value;
-                const username = document.getElementById("username").value;
-                socket.send(JSON.stringify({ username, message }));
+                socket.send(JSON.stringify({ message }));
             }
         }
 
         function connectSession() {
             const sessionId = document.getElementById("session_id").value;
-            openSocket(sessionId);
+            const username = document.getElementById("username").value;
+            
+            if(sessionId && username){
+                openSocket(sessionId, username);
+            }
         }
 
         async function generateSession() {
@@ -50,14 +54,14 @@
                 const data = await response.json();
                 console.log("ID de session :", data.session_id);
                 document.getElementById("session_id").value = data.session_id;
-                openSocket(data.session_id);
+                connectSession();
             } catch (error) {
                 console.error("Erreur lors de la création de la session :", error);
             }
         }
 
-        function openSocket(sessionId) {
-            socket = new WebSocket("ws://127.0.0.1:8000/ws/"+sessionId);
+        function openSocket(sessionId, username) {
+            socket = new WebSocket("ws://127.0.0.1:8000/ws/"+sessionId+"/"+username);
 
             socket.onopen = () => {
                 console.log("Connecté au WebSocket");
